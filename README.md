@@ -1,4 +1,4 @@
-# \<tc-analytics\>
+# <tc-analytics\>
 
 Imports and behaviors for Google Analytics and Google Tag Manager
 
