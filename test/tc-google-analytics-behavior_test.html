@@ -1,0 +1,100 @@
+<!doctype html>
+
+<html>
+  <head>
+    <title>tc-analytics test</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../tc-google-analytics.html">
+    <link rel="import" href="../tc-google-analytics-behavior.html">
+    <link rel="import" href="x-basic.html">
+  </head>
+  <body>
+
+    <test-fixture id="basic">
+      <template>
+        
+        <tc-google-analytics ua-id="UA-XXXXX-Y" debug prevent-pageview-on-init></tc-google-analytics>
+
+        <x-basic notify-when-analytics-sent></x-basic>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('tc-google-analytics', function() {
+
+        test('instantiating the element works', function() {
+          var ga = fixture('basic')[0];
+          var basic = fixture('basic')[1];
+          assert.equal(basic.is, 'x-basic');
+          assert.equal(ga.is, 'tc-google-analytics');
+        });
+
+        test('ua id should be set', function() {
+          var ga = fixture('basic')[0];
+
+          assert.equal(ga.uaId, 'UA-XXXXX-Y');
+        });
+
+        test('should send a page view to Google Analytics and set the current page', function(done) {
+
+          var element = fixture('basic')[1];
+
+          element.addEventListener('tc-google-analytics-sent', function(e) {
+            assert.equal(e.detail.type, 'pageview');
+            assert.equal(e.detail.path, 'home');
+
+            var page = ga.getAll()[0].get('page');
+            assert.equal(page, 'home');
+
+            done();
+          }, false);
+
+          element.virtualPageView('home');
+        });
+
+        test('should send an event to Google Analytics', function(done) {
+          var element = fixture('basic')[1];
+
+          var category = 'button';
+          var action = 'click';
+          var label = 'button 1';
+
+          element.addEventListener('tc-google-analytics-sent', function(e) {
+            assert.equal(e.detail.type, 'event');
+            assert.equal(e.detail.category, category);
+            assert.equal(e.detail.action, action);
+            assert.equal(e.detail.label, label);
+
+            done();
+          }, false);
+
+          element.trackEvent(category, action, label);
+        });
+
+        test('should send an event to Google Analytics when clicking on a button. Category, action and label should be set via data- attributes ', function(done) {
+          var element = fixture('basic')[1];
+
+          var category = 'button';
+          var action = 'click';
+          var label = 'button 2';
+
+          element.addEventListener('tc-google-analytics-sent', function(e) {
+            assert.equal(e.detail.type, 'event');
+            assert.equal(e.detail.category, category);
+            assert.equal(e.detail.action, action);
+            assert.equal(e.detail.label, label);
+
+            done();
+          }, false);
+
+          element.$.testbutton.click();
+        });
+
+      });
+    </script>
+  </body>
+</html>

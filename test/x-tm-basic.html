@@ -1,0 +1,28 @@
+<link rel="import" href="../../polymer/polymer.html">
+
+<link rel="import" href="../tc-tag-manager-behavior.html">
+
+<dom-module id="x-tm-basic">
+  <template>
+    
+    <button id="testbutton" on-tap="trackEventFromDataAttrs" data-category="button" data-action="click" data-label="button 2">Click</button>
+
+  </template>
+  <script>
+    Polymer({
+      is: "x-tm-basic",
+
+      behaviors: [
+        TCBehaviors.TagManagerBehavior
+      ],
+
+      properties: {
+        
+      },
+
+      testTrackEvent: function(category, action, label) {
+        this.trackEvent(category, action, label);
+      }
+    });
+  </script>
+</dom-module>

@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+  <head>
+    <title>tc-analytics demo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+
+    <link rel="import" href="../tc-google-analytics.html">
+    <link rel="import" href="x-ga-app.html">
+
+    <style is="custom-style" include="demo-pages-shared-styles">
+    </style>
+  </head>
+  <body>
+
+    <div class="vertical-section-container centered">
+      <h3>Basic tc-google-analytics Demo</h3>
+      <demo-snippet>
+        <template>
+          <tc-google-analytics ua-id="UA-XXXXX-Y" debug prevent-pageview-on-init></tc-google-analytics>
+
+          <x-ga-app></x-ga-app>
+        </template>
+      </demo-snippet>
+    </div>
+
+  </body>
+</html>

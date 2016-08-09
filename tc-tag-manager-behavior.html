@@ -1,0 +1,145 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<script>
+
+  var TCBehaviors = TCBehaviors || {};
+
+
+  /**
+   * ### TCBehaviors.TagManagerBehavior
+   * 
+   * Behavior for interacting with Google Tag Manager. Use `virtualPageView` for
+   *    sending page views from internal pages. Use `trackEvent` for tracking
+   *    individual events.
+   *
+   *
+   * Sample usage:
+   * 
+   *     <dom-module id="x-app">
+   *       <template>
+   *         <!-- This should only be imported once, when initiating the app -->
+   *         <tc-tag-manager></tc-tag-manager>
+   *
+   *         <!-- track an event via an event listener -->
+   *         <paper-button on-tap="_registerEvent"></paper-button>
+   *
+   *         <!-- track an event using a method from the behavior, using data-* attributes. -->
+   *         <paper-button on-tap="trackEventFromDataAttrs" data-category="paper-button" data-action="tap" data-label="button 2"></paper-button>
+   *       
+   *       </template>
+   *       <script>
+   *         Polymer({
+   *           is: "x-app",
+   *  
+   *           behaviors: [
+   *             TCBehaviors.TagManagerBehavior
+   *           ],
+   *
+   *           ready: function() {
+   *             // Track a page
+   *             this.virtualPageView('/home');
+   *           }
+   *  
+   *           _registerEvent: function(e) {
+   *             this.trackEvent('paper-button', 'clicked', 'button 1');
+   *           }
+   *         });
+   *       &lt;/script>
+   *     </dom-module>
+   * 
+   * 
+   *
+   * @demo demo/tag-manager.html
+   * @polymerBehavior TCBehaviors.TagManagerBehavior
+   */
+  TCBehaviors.TagManagerBehavior = {
+
+    properties: {
+      /** If truthy, an event will be fired when analytics completes the send 
+          request. This can be useful for testing */
+      notifyWhenAnalyticsSent: {
+        type: Boolean,
+        value: false
+      }
+    },
+
+    /**
+     * Send a custom event to Tag manager.
+     *
+     * @param {String} category The event category. Typically the object that
+     *    was interacted with (e.g. 'Video')
+     * @param {String=} action The action label The type of interaction
+     *    (e.g. 'play', 'click')
+     * @param {String=} label The event label Useful for categorizing events
+     *    (e.g. 'Fall Campaign')
+     */
+    trackEvent: function(category, action, label) {
+      if (!category || !action) {
+        console.error('Failed to track event, did not specify category or ' + 
+            'action');
+        return;
+      }
+
+      window.dataLayer.push({
+        'event': 'trackEvent',
+        'eventDetails.category': category,
+        'eventDetails.action': action,
+        'eventDetails.label': label,
+        'eventCallback': function() {
+          if (this.notifyWhenAnalyticsSent) {
+            this.fire('tc-tag-manager-sent', {
+              type: 'event',
+              category: category,
+              action: action,
+              label: label
+            });
+          }
+        }.bind(this)
+      });
+    },
+
+    /**
+     * This method can be attached to any element with an on-click / on-tap
+     *    event. It will grab the data-category, data-action and data-label
+     *    from the element.
+     *
+     * @param {Event} e
+     */
+    trackEventFromDataAttrs: function(e) {
+      var target = e.currentTarget;
+      var category = target.getAttribute('data-category');
+      var action = target.getAttribute('data-action');
+      var label = target.getAttribute('data-label');
+
+      if (!category || !action) {
+        console.error('Failed to track link, did not contain data-category,' +
+            'or data-action on the element.');
+        return;
+      }
+
+      this.trackEvent(category, action, label);
+    },
+
+    /**
+     * When navigating to a new page within a single page application,
+     *    make sure to track the page views via this method.
+     *
+     * @param {String} path The path relative to the root (e.g: /featured-games)
+     */
+    virtualPageView: function(path) {
+      window.dataLayer.push({
+        'event': 'VirtualPageview',
+        'virtualPageURL': path,
+        'eventCallback': function() {
+          if (this.notifyWhenAnalyticsSent) {
+            this.fire('tc-tag-manager-sent', {
+              type: 'pageview',
+              path: path
+            });
+          }
+        }.bind(this)
+      });
+    }
+  };
+
+</script>

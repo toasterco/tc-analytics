@@ -1,0 +1,110 @@
+<!doctype html>
+
+<html>
+  <head>
+    <title>tc-analytics test</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../tc-tag-manager.html">
+    <link rel="import" href="../tc-tag-manager-behavior.html">
+    <link rel="import" href="x-tm-basic.html">
+  </head>
+  <body>
+
+    <test-fixture id="basic">
+      <template>
+        
+        <tc-tag-manager gtm-id="GTM-53F6ZG"></tc-tag-manager>
+
+        <x-tm-basic notify-when-analytics-sent></x-tm-basic>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('tc-tag-manager', function() {
+
+        test('instantiating the element works', function() {
+          var tm = fixture('basic')[0];
+          var basic = fixture('basic')[1];
+          
+          assert.equal(tm.is, 'tc-tag-manager');
+          assert.equal(basic.is, 'x-tm-basic');
+        });
+
+        test('gtm id should be set', function() {
+          var ga = fixture('basic')[0];
+
+          assert.equal(ga.gtmId, 'GTM-53F6ZG');
+        });
+
+        test('should send a page view to Google Tag Manager and set the current page', function(done) {
+
+          var element = fixture('basic')[1];
+
+          element.addEventListener('tc-tag-manager-sent', eventComplete, false);
+
+          function eventComplete(e) {
+            assert.equal(e.detail.type, 'pageview');
+            assert.equal(e.detail.path, 'home');
+
+            element.removeEventListener('tc-tag-manager-sent', eventComplete, false);            
+
+            done();
+          }
+
+          element.virtualPageView('home');
+        });
+
+        test('should send an event to Google Tag Manager', function(done) {
+          var element = fixture('basic')[1];
+
+          var category = 'button';
+          var action = 'click';
+          var label = 'button 1';
+
+          element.addEventListener('tc-tag-manager-sent', eventComplete, false);
+
+          function eventComplete(e) {
+            assert.equal(e.detail.type, 'event');
+            assert.equal(e.detail.category, category);
+            assert.equal(e.detail.action, action);
+            assert.equal(e.detail.label, label);
+
+            element.removeEventListener('tc-tag-manager-sent', eventComplete, false);            
+
+            done();
+          }
+
+          element.trackEvent(category, action, label);
+        });
+
+        test('should send an event to Google Tag Manager when clicking on a button. Category, action and label should be set via data- attributes ', function(done) {
+          var element = fixture('basic')[1];
+
+          var category = 'button';
+          var action = 'click';
+          var label = 'button 2';
+
+          element.addEventListener('tc-tag-manager-sent', eventComplete, false);
+
+          function eventComplete(e) {
+            assert.equal(e.detail.type, 'event');
+            assert.equal(e.detail.category, category);
+            assert.equal(e.detail.action, action);
+            assert.equal(e.detail.label, label);
+
+            element.removeEventListener('tc-tag-manager-sent', eventComplete, false);            
+
+            done();
+          }
+
+          element.$.testbutton.click();
+        });
+
+      });
+    </script>
+  </body>
+</html>

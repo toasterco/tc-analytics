@@ -1,0 +1,49 @@
+<link rel="import" href="../../polymer/polymer.html">
+
+<link rel="import" href="../tc-google-analytics-behavior.html">
+
+<dom-module id="x-ga-app">
+  <template>
+    
+    <button on-tap="_sendPageview">Send pageview</button>
+
+    <button on-tap="trackEventFromDataAttrs" data-category="button" data-action="click" data-label="button 2">Send send event from data attributes</button>
+
+  </template>
+  <script>
+    Polymer({
+      is: "x-ga-app",
+
+      behaviors: [
+        TCBehaviors.GoogleAnalyticsBehavior
+      ],
+
+      properties: {
+        notifyWhenAnalyticsSent: {
+          type: Boolean,
+          value: true
+        }
+      },
+
+      listeners: {
+        'tc-google-analytics-sent': '_notifySent'
+      },
+
+      _sendPageview: function() {
+        console.log('sending page view');
+        this.virtualPageView('home');
+      },
+
+      _notifySent: function(e) {
+        console.log(e);
+
+        if (e.detail.type === 'pageview') {
+          alert('Page view sent: ' + e.detail.path);
+        } else if (e.detail.type === 'event') {
+          alert('Event sent: Category: ' + e.detail.category + ', Action: ' + 
+            e.detail.action + '. Label: ' + e.detail.label);
+        }
+      }
+    });
+  </script>
+</dom-module>
