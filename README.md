@@ -1,6 +1,96 @@
 # <tc-analytics\>
 
-Imports and behaviors for Google Analytics and Google Tag Manager
+
+### TCBehaviors.GoogleAnalyticsBehavior
+
+Behavior for interacting with Google Analytics. Use `virtualPageView` for
+   sending page views from internal pages. Use `trackEvent` for tracking
+   individual events.
+
+
+Sample usage:
+
+    <dom-module id="x-app">
+      <template>
+        <!-- This should only be imported once, when initiating the app -->
+        <tc-google-analytics></tc-google-analytics>
+
+        <!-- track an event via an event listener -->
+        <paper-button on-tap="_registerEvent"></paper-button>
+
+        <!-- track an event using a method from the behavior, using data-* attributes. -->
+        <paper-button on-tap="trackEventFromDataAttrs" data-category="paper-button" data-action="tap" data-label="button 2"></aper-button>
+      
+      </template>
+      <script>
+        Polymer({
+          is: "x-app",
+ 
+          behaviors: [
+            TCBehaviors.GoogleAnalyticsBehavior
+          ],
+ 
+          properties: {
+            apiBaseUrl: {
+              type: String,
+              value: '/api/i18n/'
+            }
+          },
+
+          ready: function() {
+            // Track a page
+            this.virtualPageView('/home');
+          }
+ 
+          _registerEvent: function(e) {
+            this._trackEvent('paper-button', 'clicked', 'button 1');
+          }
+        });
+      </script>
+    </dom-module>
+
+
+### TCBehaviors.TagManagerBehavior
+
+Behavior for interacting with Google Tag Manager. Use `virtualPageView` for
+   sending page views from internal pages. Use `trackEvent` for tracking
+   individual events.
+
+
+Sample usage:
+
+    <dom-module id="x-app">
+      <template>
+        <!-- This should only be imported once, when initiating the app -->
+        <tc-tag-manager></tc-tag-manager>
+
+        <!-- track an event via an event listener -->
+        <paper-button on-tap="_registerEvent"></paper-button>
+
+        <!-- track an event using a method from the behavior, using data-* attributes. -->
+        <paper-button on-tap="trackEventFromDataAttrs" data-category="paper-button" data-action="tap" data-label="button 2"></aper-button>
+      
+      </template>
+      <script>
+        Polymer({
+          is: "x-app",
+ 
+          behaviors: [
+            TCBehaviors.TagManagerBehavior
+          ],
+
+          ready: function() {
+            // Track a page
+            this.virtualPageView('/home');
+          }
+ 
+          _registerEvent: function(e) {
+            this.trackEvent('paper-button', 'clicked', 'button 1');
+          }
+        });
+      &lt;/script>
+    </dom-module>
+
 
 ## Install the Polymer-CLI
 
